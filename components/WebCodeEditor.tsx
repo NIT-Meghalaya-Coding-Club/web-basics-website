@@ -1,18 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import CodeEditor from "./CodeEditor";
 
 type Language = "html" | "css" | "javascript";
 
-export default function WebCodeEditor() {
-  const [activeTab, setActiveTab] = useState<Language>("html");
-
-  const [code, setCode] = useState({
-    html: `<h1>Hello World</h1>
+const defaultCode = {
+  html: `<h1>Hello World</h1>
 <p>Edit the code and see your changes.</p>`,
 
-    css: `body {
+  css: `body {
   font-family: Arial, sans-serif;
   padding: 40px;
 }
@@ -21,14 +18,42 @@ h1 {
   color: #2563eb;
 }`,
 
-    javascript: `console.log("Hello from JavaScript!");`,
-  });
+  javascript: `console.log("Hello from JavaScript!");`,
+};
+
+const STORAGE_KEY = "web-code-editor";
+
+export default function WebCodeEditor() {
+  const [activeTab, setActiveTab] = useState<Language>("html");
+
+  const [code, setCode] = useState(defaultCode);
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  useEffect(() => {
+    const savedCode = localStorage.getItem(STORAGE_KEY); 
+    
+    if (savedCode) {
+        try {
+            setCode(JSON.parse(savedCode)); 
+        } catch (error) {
+            console.error("Failed to load saved code");
+        }
+    }
+
+    setIsLoaded(true); 
+  }, []); 
 
   const handleChange = (value: string) => {
-    setCode((previous) => ({
-      ...previous,
-      [activeTab]: value,
-    }));
+    setCode((previous) => {
+        const updatedCode = {
+            ...previous, 
+            [activeTab]: value
+        }; 
+
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedCode)); 
+
+        return updatedCode; 
+    });
   };
 
   const previewDocument = `
@@ -77,12 +102,14 @@ h1 {
 
         {/* CodeMirror */}
         <div className="min-h-0 flex-1">
-          <CodeEditor
-            key={activeTab}
-            value={code[activeTab]}
-            language={activeTab}
-            onChange={handleChange}
-          />
+            { isLoaded && (
+                <CodeEditor
+                    key={activeTab}
+                    value={code[activeTab]}
+                    language={activeTab}
+                    onChange={handleChange}
+                />
+            )}
         </div>
 
       </div>
