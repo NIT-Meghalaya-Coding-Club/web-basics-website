@@ -31,35 +31,78 @@ h1 {
     }));
   };
 
+  const previewDocument = `
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    ${code.css}
+  </style>
+</head>
+
+<body>
+
+  ${code.html}
+
+  <script>
+    ${code.javascript}
+  </script>
+
+</body>
+</html>
+`;
+
   return (
-    <div className="flex h-[600px] flex-col overflow-hidden rounded-lg border border-gray-700 bg-[#282c34]">
-      
-      {/* Tabs */}
-      <div className="flex border-b border-gray-700 bg-[#21252b]">
-        {(["html", "css", "javascript"] as Language[]).map((tab) => (
-          <button
-            key={tab}
-            onClick={() => setActiveTab(tab)}
-            className={`px-5 py-3 text-sm font-medium transition ${
-              activeTab === tab
-                ? "border-b-2 border-blue-500 bg-[#282c34] text-white"
-                : "text-gray-400 hover:bg-[#282c34] hover:text-white"
-            }`}
-          >
-            {tab === "javascript" ? "JavaScript" : tab.toUpperCase()}
-          </button>
-        ))}
+    <div className="flex h-[600px] overflow-hidden rounded-lg border border-gray-700">
+
+      {/* LEFT - CODE EDITOR */}
+      <div className="flex w-1/2 flex-col bg-[#282c34]">
+
+        {/* Tabs */}
+        <div className="flex border-b border-gray-700 bg-[#21252b]">
+          {(["html", "css", "javascript"] as Language[]).map((tab) => (
+            <button
+              key={tab}
+              onClick={() => setActiveTab(tab)}
+              className={`px-5 py-3 text-sm font-medium transition ${
+                activeTab === tab
+                  ? "border-b-2 border-blue-500 bg-[#282c34] text-white"
+                  : "text-gray-400 hover:bg-[#282c34] hover:text-white"
+              }`}
+            >
+              {tab === "javascript" ? "JavaScript" : tab.toUpperCase()}
+            </button>
+          ))}
+        </div>
+
+        {/* CodeMirror */}
+        <div className="min-h-0 flex-1">
+          <CodeEditor
+            key={activeTab}
+            value={code[activeTab]}
+            language={activeTab}
+            onChange={handleChange}
+          />
+        </div>
+
       </div>
 
-      {/* Editor */}
-      <div className="min-h-0 flex-1">
-        <CodeEditor
-          key={activeTab}
-          value={code[activeTab]}
-          language={activeTab}
-          onChange={handleChange}
+      {/* RIGHT - PREVIEW */}
+      <div className="flex w-1/2 flex-col bg-white">
+
+        <div className="border-b bg-gray-100 px-4 py-3 text-sm font-medium text-gray-700">
+          Preview
+        </div>
+
+        <iframe
+          title="Live Preview"
+          srcDoc={previewDocument}
+          sandbox="allow-scripts"
+          className="h-full w-full border-0"
         />
+
       </div>
+
     </div>
   );
 }
