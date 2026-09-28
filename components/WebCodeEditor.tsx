@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import CodeEditor from "./CodeEditor";
+import { Button } from "@/components/ui/button";
 
 type Language = "html" | "css" | "javascript";
 
@@ -28,6 +29,15 @@ export default function WebCodeEditor() {
 
   const [code, setCode] = useState(defaultCode);
   const [isLoaded, setIsLoaded] = useState(false);
+
+  const resetCode = () => {
+    setCode(defaultCode);
+    if (activeTab == "html") 
+        setActiveTab('css'); 
+    else 
+        setActiveTab('html'); 
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(defaultCode));
+  };
 
   useEffect(() => {
     const savedCode = localStorage.getItem(STORAGE_KEY); 
@@ -117,8 +127,18 @@ export default function WebCodeEditor() {
       {/* RIGHT - PREVIEW */}
       <div className="flex w-1/2 flex-col bg-white">
 
-        <div className="border-b bg-gray-100 px-4 py-3 text-sm font-medium text-gray-700">
-          Preview
+        <div className="flex items-center justify-between border-b bg-gray-100 px-4 py-2">
+            <span className="text-sm font-medium text-gray-700">
+                Preview
+            </span>
+
+            <Button
+                onClick={resetCode}
+                variant="default"
+                className="cursor-pointer"
+            >
+                Reset
+            </Button>
         </div>
 
         <iframe
