@@ -3,7 +3,12 @@
 import { useEffect, useRef } from "react";
 import { EditorState } from "@codemirror/state";
 import { EditorView, keymap } from "@codemirror/view";
-import { defaultKeymap, indentWithTab } from "@codemirror/commands";
+import { 
+    defaultKeymap, 
+    indentWithTab, 
+    history, 
+    historyKeymap
+} from "@codemirror/commands";
 import { html } from "@codemirror/lang-html";
 import { css } from "@codemirror/lang-css";
 import { javascript } from "@codemirror/lang-javascript";
@@ -41,8 +46,11 @@ export default function CodeEditor({
     const state = EditorState.create({
       doc: value,
       extensions: [
+        history(), 
+
         keymap.of([
           ...defaultKeymap,
+          ...historyKeymap,
           indentWithTab,
         ]),
 
